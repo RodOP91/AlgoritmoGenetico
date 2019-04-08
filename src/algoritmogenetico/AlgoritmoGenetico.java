@@ -5,18 +5,19 @@ package algoritmogenetico;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import algoritmogenetico.Formula;
+import java.util.List;
 
 /**
  *
  * @author J. Rodrigo Ordóñez Pacheco
  */
 public class AlgoritmoGenetico {
-    public static final int POBLACION = 20;
-    public static final int N = 20;
+    private static final int POBLACION = 20;
+    private static final int N = 20;
     private static Formula objeto_evaluador = new Formula();
     private static Restricciones objeto_restricciones = new Restricciones();
-    public static Poblacion poblacion = new Poblacion();
-    public static Poblacion padres = new Poblacion();
+    private static Poblacion poblacion = new Poblacion();
+    private static Poblacion padres = new Poblacion();
     
     
     
@@ -39,36 +40,39 @@ public class AlgoritmoGenetico {
     
     private static void evaluarPoblacion(){
         for(int x =0; x<POBLACION ; x++){
-            double resultado_primer_termino = objeto_evaluador.primerTermino(poblacion.getPoblacion().get(x).getValores());
-            //System.out.println(resultado_primer_termino);
-            double resultado_segundo_termino = objeto_evaluador.segundoTermino(poblacion.getPoblacion().get(x).getValores());
-            //System.out.println(resultado_segundo_termino);
-            double resultado_resta= objeto_evaluador.restaPrimeroMenosSegundo(resultado_primer_termino, resultado_segundo_termino);
-            //System.out.println(resultado_resta);
-            double resultado_tercer_termino = objeto_evaluador.tercerTermino(poblacion.getPoblacion().get(x).getValores());
-            //System.out.println(resultado_tercer_termino);
-            double resultado_general = objeto_evaluador.divisionYValorAbsoluto(resultado_resta, resultado_tercer_termino);
-            System.out.println( x + "--> " +resultado_general);
-            
-            poblacion.getPoblacion().get(x).setEvaluacion(resultado_general);
+            Individuo individuo = poblacion.getPoblacion().get(x);
+            int resultadoEvaluacion = evaluacionIndividuo(individuo);
+            if(resultadoEvaluacion == 0){
+                individuo.setEvaluacion(2000000);
+            } else if ( resultadoEvaluacion == 1){
+                individuo.setEvaluacion(2000000);
+            } else if( resultadoEvaluacion == 2){
+                asignarAptitud(individuo);
+            }else{
+                System.out.println("Error en asignación de aptitud");
+            }
         }
     }
     
-    private static void evaluarRestriccionesEnPoblacion(){
-        for(int x = 0; x<POBLACION ; x++){
-            
-            boolean aprobado1 = objeto_restricciones.primeraRestriccion(poblacion.getPoblacion().get(x));
-            poblacion.getPoblacion().get(x).setAprobado(aprobado1);
-            if(aprobado1 == true){
-                boolean aprobado2 = objeto_restricciones.segundaRestriccion(poblacion.getPoblacion().get(x));
-                poblacion.getPoblacion().get(x).setAprobado(aprobado2);
-                System.out.println("-->" + x);
-            }else{
-                
+
+    private static int evaluacionIndividuo(Individuo individuo){
+        int respuesta = 0;
+        if(objeto_restricciones.primeraRestriccion(individuo)){
+            respuesta++;
+            if(objeto_restricciones.segundaRestriccion(individuo)){
+                respuesta++;
             }
-            
-            
         }
+        return respuesta;
+    }
+    
+    private static void asignarAptitud(Individuo individuo){
+        double primeraSuma = objeto_evaluador.primerTermino(individuo.getValores());
+        double multipOrdenada = objeto_evaluador.segundoTermino(individuo.getValores());
+        double raiz = objeto_evaluador.tercerTermino(individuo.getValores());
+        double resta = primeraSuma - (2)*multipOrdenada;
+        double resultado = objeto_evaluador.divisionYValorAbsoluto(resta, raiz);
+        individuo.setEvaluacion(resultado);
     }
     
     private static void seleccionDePadres(){
@@ -104,7 +108,6 @@ public class AlgoritmoGenetico {
     public static void main(String[] args) {
        generarPrimeraGeneracion();
        evaluarPoblacion();
-       evaluarRestriccionesEnPoblacion();
        int contador=0;
        for(int x =0; x<POBLACION; x++){
            //System.out.println(x);
