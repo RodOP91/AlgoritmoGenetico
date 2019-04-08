@@ -100,7 +100,7 @@ public class AlgoritmoGenetico {
 
     }
 
-    private static List<Individuo> seleccionPadres() {
+    private static List<Individuo> seleccionPadresRuleta() {
         List<Individuo> padresSelect = new ArrayList<>();
         double valorEsperado = 0.0;
         for (int x = 0; x < poblacion.getPoblacion().size(); x++) {
@@ -157,7 +157,7 @@ public class AlgoritmoGenetico {
             }
         }
         System.out.println("Numero de aprobados: " + contador);
-        List<Individuo> padres = seleccionPadres();
+        List<Individuo> padres = seleccionPadresRuleta();
 
     }
 
