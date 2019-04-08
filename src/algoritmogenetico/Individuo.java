@@ -41,5 +41,8 @@ public class Individuo {
         this.evaluacion = evaluacion;
     }
     
+    public void agregarValor(double valor){
+        this.valores.add(valor);
+    }
     
 }

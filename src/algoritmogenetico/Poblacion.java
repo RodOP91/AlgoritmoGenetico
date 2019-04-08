@@ -6,6 +6,7 @@
 package algoritmogenetico;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -29,5 +30,9 @@ public class Poblacion {
         this.individuos = individuos;
     }
     
-    
+    public void ordenarPoblacion(){
+        individuos.sort(Comparator.comparingDouble(Individuo::getEvaluacion));
+    }
 }
+
+
