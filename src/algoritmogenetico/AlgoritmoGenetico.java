@@ -5,6 +5,7 @@ package algoritmogenetico;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import algoritmogenetico.Formula;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,8 +34,7 @@ public class AlgoritmoGenetico {
             }
             poblacion.getPoblacion().get(x).setValores(valores);
             for (int z = 0; z < N; z++) {
-                //System.out.println(poblacion.getPoblacion().get(x).getValores().get(z));
-
+                System.out.println(poblacion.getPoblacion().get(x).getValores().get(z));
             }
             //System.out.println("FIN");
         }
@@ -44,6 +44,7 @@ public class AlgoritmoGenetico {
         for (int x = 0; x < NUM_INDIVIDUOS; x++) {
             Individuo individuo = poblacion.getPoblacion().get(x);
             int resultadoEvaluacion = evaluacionIndividuo(individuo);
+            System.out.println(resultadoEvaluacion);
             if (resultadoEvaluacion == 0) {
                 individuo.setEvaluacion(2000000);
             } else if (resultadoEvaluacion == 1) {
@@ -76,31 +77,6 @@ public class AlgoritmoGenetico {
         individuo.setEvaluacion(resultado);
     }
 
-    private static void seleccionDePadres() {
-        double promedio = 0.0;
-        int temp = 0;
-        for (int x = 0; x < POBLACION; x++) {
-            if (poblacion.getPoblacion().get(x).isAprobado()) {
-                padres.getPoblacion().add(poblacion.getPoblacion().get(x));
-
-            }
-        }
-
-        for (int x = 0; x < padres.getPoblacion().size(); x++) {
-            promedio += padres.getPoblacion().get(x).getEvaluacion();
-        }
-        promedio = promedio / padres.getPoblacion().size();
-
-        for (int x = 0; x < padres.getPoblacion().size(); x++) {
-            if (padres.getPoblacion().get(x).getEvaluacion() >= promedio) {
-                temp++;
-                System.out.println(temp);
-            }
-        }
-        System.out.println("Numero de padres: " + temp);
-
-    }
-
     private static List<Individuo> seleccionPadresRuleta() {
         List<Individuo> padresSelect = new ArrayList<>();
         double valorEsperado = 0.0;
@@ -108,13 +84,14 @@ public class AlgoritmoGenetico {
             double aptitud = poblacion.getPoblacion().get(x).getEvaluacion();
             valorEsperado += aptitud;
         }
-        for (int x = 0; x < 50; x++) {
+        for (int x = 0; x < 51; x++) {
             double numeroGenerado = Math.random() * valorEsperado;
             double sumaNumeros = 0.0;
             for (int y = 0; y < poblacion.getPoblacion().size(); y++) {
                 sumaNumeros += poblacion.getPoblacion().get(y).getEvaluacion();
-                if (sumaNumeros > numeroGenerado) {
+                if (Math.abs(sumaNumeros) > Math.abs(numeroGenerado)) {
                     padresSelect.add(poblacion.getPoblacion().get(y));
+                    break;
                 }
             }
         }
@@ -176,20 +153,18 @@ public class AlgoritmoGenetico {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String nombreArchivo = args[0];
+        String nombreArchivo = "Prueba.csv";
         generarPrimeraGeneracion();
         evaluarPoblacion();
         poblacion.ordenarPoblacion();
-        int contador = 0;
-        for (int x = 0; x < POBLACION; x++) {
-            //System.out.println(x);
-            if (poblacion.getPoblacion().get(x).isAprobado()) {
-                contador++;
-            }
+        Collections.reverse(poblacion.getPoblacion());
+        for (int x = 0; x < poblacion.getPoblacion().size(); x++) {
+            System.out.println(x + " " + poblacion.getPoblacion().get(x).getEvaluacion());
         }
-        System.out.println("Numero de aprobados: " + contador);
         List<Individuo> padres = seleccionPadresRuleta();
-
+        for (int x = 0; x < padres.size(); x++) {
+            System.out.println(x + "" + padres.get(x).getEvaluacion());
+        }
         FileWriter.guardarArchivo(nombreArchivo);
     }
 
