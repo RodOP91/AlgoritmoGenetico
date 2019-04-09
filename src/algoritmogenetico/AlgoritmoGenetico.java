@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import algoritmogenetico.Formula;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -116,6 +117,17 @@ public class AlgoritmoGenetico {
             }
             hijos.add(hijo);
             hijos.add(hijo2);
+        }
+        return hijos;
+    }
+    
+    public List<Individuo> mutarHijos(List<Individuo> hijos){
+        Random rand = new Random();
+        int num_aleatorio= rand.nextInt(20);
+        for(int x =0; x < hijos.size() ; x++){
+            ArrayList<Double> valores_mutados = new ArrayList();
+            valores_mutados.set(num_aleatorio, (rand.nextDouble()*(11-0)+0));
+            hijos.get(x).setValores(valores_mutados);
         }
         return hijos;
     }
