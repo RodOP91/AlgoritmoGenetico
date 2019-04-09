@@ -26,9 +26,9 @@ public class AlgoritmoGenetico {
         for (int x = 0; x < POBLACION; x++) {
             ArrayList<Double> valores = new ArrayList();
             for (int y = 0; y < N; y++) {
-                int temp = ThreadLocalRandom.current().nextInt(0, 11);
+                double temp = Math.random() * 10;
                 //System.out.println(temp);
-                valores.add((double) temp);
+                valores.add(temp);
             }
             poblacion.getPoblacion().get(x).setValores(valores);
             for (int z = 0; z < N; z++) {
@@ -46,7 +46,7 @@ public class AlgoritmoGenetico {
             if (resultadoEvaluacion == 0) {
                 individuo.setEvaluacion(2000000);
             } else if (resultadoEvaluacion == 1) {
-                individuo.setEvaluacion(2000000);
+                individuo.setEvaluacion(1000000);
             } else if (resultadoEvaluacion == 2) {
                 asignarAptitud(individuo);
             } else {
@@ -141,11 +141,41 @@ public class AlgoritmoGenetico {
         }
         return hijos;
     }
-
+    
+    private static double media(List<Individuo> poblacionAux){
+        double promedio = 0.0;
+        for(int x = 0; x< poblacionAux.size(); x++){
+            promedio += poblacionAux.get(x).getEvaluacion();
+        }
+        promedio /= poblacionAux.size();
+        return promedio;
+    }
+    
+    private static double mediana(List<Individuo>poblacionAux){
+        return poblacionAux.get(poblacionAux.size()/2).getEvaluacion();
+    }
+    
+    private static double varianza(List<Individuo>poblacionAux){
+        double varianza = 0.0;
+        double promedio = media(poblacionAux);
+        for(int x = 0; x < poblacionAux.size(); x++){
+            double rango;
+            rango = Math.pow(poblacionAux.get(x).getEvaluacion()-promedio, 2);
+            varianza += rango;
+        }
+        varianza /= poblacionAux.size();
+        return varianza;
+    }
+    
+    private static double desviacionEstandar(List<Individuo>poblacionAux){
+        return Math.sqrt(varianza(poblacionAux));
+    }
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        String nombreArchivo = args[0];
         generarPrimeraGeneracion();
         evaluarPoblacion();
         poblacion.ordenarPoblacion();
@@ -158,7 +188,8 @@ public class AlgoritmoGenetico {
         }
         System.out.println("Numero de aprobados: " + contador);
         List<Individuo> padres = seleccionPadresRuleta();
-
+        
+        FileWriter.guardarArchivo(nombreArchivo);
     }
 
 }
