@@ -74,7 +74,7 @@ public class AlgoritmoGenetico {
         double resultado = objeto_evaluador.divisionYValorAbsoluto(resta, raiz);
         individuo.setEvaluacion(resultado);
     }
-
+    /*
     private static void seleccionDePadres() {
         double promedio = 0.0;
         int temp = 0;
@@ -98,7 +98,7 @@ public class AlgoritmoGenetico {
         }
         System.out.println("Numero de padres: " + temp);
 
-    }
+    }*/
 
     private static List<Individuo> seleccionPadresRuleta() {
         List<Individuo> padresSelect = new ArrayList<>();
@@ -120,23 +120,23 @@ public class AlgoritmoGenetico {
         return padresSelect;
     }
 
-    private static List<Individuo> cruzar(List<Individuo> padres) {
+    private static List<Individuo> cruzar(List<Individuo> padresSelect) {
         List<Individuo> hijos = new ArrayList<>();
-        for (int x = 0; x < 200; x = x + 2) {
-            ArrayList<Double> valoresPadre1 = padres.get(x).getValores();
-            ArrayList<Double> valoresPadre2 = padres.get(x + 1).getValores();
-            Individuo hijo = new Individuo();
+        for (int x = 0; x < padresSelect.size(); x = x + 2) {
+            ArrayList<Double> valoresPadre1 = padresSelect.get(x).getValores();
+            ArrayList<Double> valoresPadre2 = padresSelect.get(x + 1).getValores();
+            Individuo hijo1 = new Individuo();
             Individuo hijo2 = new Individuo();
             for (int y = 0; y < 20; y++) {
                 if (y >= POSICION_CRUZA) {
-                    hijo.agregarValor(valoresPadre2.get(y) * PROBAB_CRUZA);
+                    hijo1.agregarValor(valoresPadre2.get(y) * PROBAB_CRUZA);
                     hijo2.agregarValor(valoresPadre1.get(y)* PROBAB_CRUZA);
                 } else {
-                    hijo.agregarValor(valoresPadre1.get(y));
+                    hijo1.agregarValor(valoresPadre1.get(y));
                     hijo2.agregarValor(valoresPadre2.get(y));
                 }
             }
-            hijos.add(hijo);
+            hijos.add(hijo1);
             hijos.add(hijo2);
         }
         return hijos;
@@ -175,7 +175,7 @@ public class AlgoritmoGenetico {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String nombreArchivo = args[0];
+        String nombreArchivo = "Primerarchivo";
         generarPrimeraGeneracion();
         evaluarPoblacion();
         poblacion.ordenarPoblacion();
@@ -189,7 +189,10 @@ public class AlgoritmoGenetico {
         System.out.println("Numero de aprobados: " + contador);
         List<Individuo> padres = seleccionPadresRuleta();
         
-        FileWriter.guardarArchivo(nombreArchivo);
+        for(int x=0; x<POBLACION; x++){
+            System.out.println("Evaluación: " + poblacion.getPoblacion().get(x).getEvaluacion());
+        }
+        //FileWriter.guardarArchivo(nombreArchivo);
     }
 
 }
