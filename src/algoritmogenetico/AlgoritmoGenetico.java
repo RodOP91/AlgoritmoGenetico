@@ -15,6 +15,7 @@ public class AlgoritmoGenetico {
 
     private static final int POBLACION = 20;
     private static final int N = 20;
+    private static final int NUM_INDIVIDUOS = 200;
     private static final int POSICION_CRUZA = 10;
     private static final double PROBAB_CRUZA = 0.8;
     private static Formula objeto_evaluador = new Formula();
@@ -23,7 +24,7 @@ public class AlgoritmoGenetico {
     private static Poblacion padres = new Poblacion();
 
     private static void generarPrimeraGeneracion() {
-        for (int x = 0; x < POBLACION; x++) {
+        for (int x = 0; x < NUM_INDIVIDUOS; x++) {
             ArrayList<Double> valores = new ArrayList();
             for (int y = 0; y < N; y++) {
                 double temp = Math.random() * 10;
@@ -40,7 +41,7 @@ public class AlgoritmoGenetico {
     }
 
     private static void evaluarPoblacion() {
-        for (int x = 0; x < POBLACION; x++) {
+        for (int x = 0; x < NUM_INDIVIDUOS; x++) {
             Individuo individuo = poblacion.getPoblacion().get(x);
             int resultadoEvaluacion = evaluacionIndividuo(individuo);
             if (resultadoEvaluacion == 0) {
@@ -130,7 +131,7 @@ public class AlgoritmoGenetico {
             for (int y = 0; y < 20; y++) {
                 if (y >= POSICION_CRUZA) {
                     hijo.agregarValor(valoresPadre2.get(y) * PROBAB_CRUZA);
-                    hijo2.agregarValor(valoresPadre1.get(y)* PROBAB_CRUZA);
+                    hijo2.agregarValor(valoresPadre1.get(y) * PROBAB_CRUZA);
                 } else {
                     hijo.agregarValor(valoresPadre1.get(y));
                     hijo2.agregarValor(valoresPadre2.get(y));
@@ -141,36 +142,36 @@ public class AlgoritmoGenetico {
         }
         return hijos;
     }
-    
-    private static double media(List<Individuo> poblacionAux){
+
+    private static double media(List<Individuo> poblacionAux) {
         double promedio = 0.0;
-        for(int x = 0; x< poblacionAux.size(); x++){
+        for (int x = 0; x < poblacionAux.size(); x++) {
             promedio += poblacionAux.get(x).getEvaluacion();
         }
         promedio /= poblacionAux.size();
         return promedio;
     }
-    
-    private static double mediana(List<Individuo>poblacionAux){
-        return poblacionAux.get(poblacionAux.size()/2).getEvaluacion();
+
+    private static double mediana(List<Individuo> poblacionAux) {
+        return poblacionAux.get(poblacionAux.size() / 2).getEvaluacion();
     }
-    
-    private static double varianza(List<Individuo>poblacionAux){
+
+    private static double varianza(List<Individuo> poblacionAux) {
         double varianza = 0.0;
         double promedio = media(poblacionAux);
-        for(int x = 0; x < poblacionAux.size(); x++){
+        for (int x = 0; x < poblacionAux.size(); x++) {
             double rango;
-            rango = Math.pow(poblacionAux.get(x).getEvaluacion()-promedio, 2);
+            rango = Math.pow(poblacionAux.get(x).getEvaluacion() - promedio, 2);
             varianza += rango;
         }
         varianza /= poblacionAux.size();
         return varianza;
     }
-    
-    private static double desviacionEstandar(List<Individuo>poblacionAux){
+
+    private static double desviacionEstandar(List<Individuo> poblacionAux) {
         return Math.sqrt(varianza(poblacionAux));
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -188,7 +189,7 @@ public class AlgoritmoGenetico {
         }
         System.out.println("Numero de aprobados: " + contador);
         List<Individuo> padres = seleccionPadresRuleta();
-        
+
         FileWriter.guardarArchivo(nombreArchivo);
     }
 

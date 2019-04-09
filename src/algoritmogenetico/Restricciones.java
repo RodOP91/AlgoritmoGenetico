@@ -23,17 +23,15 @@ public class Restricciones {
         boolean aprobado= true;
         
         for(int x = 0; x< 20; x++){
-            res *= ind.getValores().get(x);
+            res *= individuo.getValores().get(x);
         }
         double restriccion = 0.75 - (res);
         System.out.println("Primera rest: " + restriccion);
         if(restriccion <=0){
-            
+            return true;
         }else{
-            aprobado = false;
+            return false;
         }
-        
-        return aprobado;
     }
     
     /**
@@ -48,17 +46,15 @@ public class Restricciones {
         double res =0.0;
         
         for(int x=0; x<20; x++){
-            res += ind.getValores().get(x);
+            res += individuo.getValores().get(x);
         }
         
         double restriccion = (res)-(7.5 * 20);
         System.out.println("Segunda rest: " + restriccion);
         if(restriccion<= 0){
-            
+            return true;
         }else{
-            aprobado=false;
+            return false;
         }
-        
-        return aprobado;
     }
 }
