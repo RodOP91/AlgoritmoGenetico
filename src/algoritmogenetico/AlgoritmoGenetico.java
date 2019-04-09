@@ -107,7 +107,7 @@ public class AlgoritmoGenetico {
             double aptitud = poblacion.getPoblacion().get(x).getEvaluacion();
             valorEsperado += aptitud;
         }
-        for (int x = 0; x < 200; x++) {
+        for (int x = 0; x < 50; x++) {
             double numeroGenerado = Math.random() * valorEsperado;
             double sumaNumeros = 0.0;
             for (int y = 0; y < poblacion.getPoblacion().size(); y++) {
@@ -122,7 +122,7 @@ public class AlgoritmoGenetico {
 
     private static List<Individuo> cruzar(List<Individuo> padres) {
         List<Individuo> hijos = new ArrayList<>();
-        for (int x = 0; x < 200; x = x + 2) {
+        for (int x = 0; x < 50; x = x + 2) {
             ArrayList<Double> valoresPadre1 = padres.get(x).getValores();
             ArrayList<Double> valoresPadre2 = padres.get(x + 1).getValores();
             Individuo hijo = new Individuo();
