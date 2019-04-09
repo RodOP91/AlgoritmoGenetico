@@ -24,6 +24,7 @@ public class AlgoritmoGenetico {
     private static Restricciones objeto_restricciones = new Restricciones();
     private static Poblacion poblacion = new Poblacion();
     private static Poblacion padres = new Poblacion();
+    private static int hijosEvaluados = 0;
 
     private static void generarPrimeraGeneracion() {
         for (int x = 0; x < NUM_INDIVIDUOS; x++) {
@@ -130,6 +131,31 @@ public class AlgoritmoGenetico {
         return hijosMutados;
     }
 
+    private static void seleccionNatural(List<Individuo> hijosMutados) {
+        for (int x = 0; x < hijosMutados.size(); x++) {
+            Individuo individuo = hijosMutados.get(x);
+            int resultadoEvaluacion = evaluacionIndividuo(individuo);
+            if (resultadoEvaluacion == 0) {
+                individuo.setEvaluacion(2000000);
+            } else if (resultadoEvaluacion == 1) {
+                individuo.setEvaluacion(1000000);
+            } else if (resultadoEvaluacion == 2) {
+                asignarAptitud(individuo);
+            } else {
+                System.out.println("Error en asignación de aptitud");
+            }
+        }
+        int numeroHijos = poblacion.getPoblacion().size() - hijosMutados.size();
+        int contador = 0;
+        for (int x = poblacion.getPoblacion().size() - 1; x >= numeroHijos; x--) {
+            if (hijosMutados.get(contador).getEvaluacion() < 1000000) {
+                poblacion.getPoblacion().set(x, hijosMutados.get(contador));
+                hijosEvaluados++;
+            }
+            contador++;
+        }
+    }
+
     private static double media(List<Individuo> poblacionAux) {
         double promedio = 0.0;
         for (int x = 0; x < poblacionAux.size(); x++) {
@@ -163,6 +189,10 @@ public class AlgoritmoGenetico {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        String nombreArchivo = "evaluaciones/" + args[0];
+        String nombreEstadisticas = "estadisticas/" + args[0];
+        FileWriter escritorArchivo = new FileWriter(nombreArchivo);
+        FileWriter escritorEstadisticas = new FileWriter(nombreEstadisticas);
         int generaciones = 1;
         int evaluaciones = 50;
         generarPrimeraGeneracion();
@@ -170,34 +200,50 @@ public class AlgoritmoGenetico {
         poblacion.ordenarPoblacion();
         Collections.reverse(poblacion.getPoblacion());
         double mejor = poblacion.getPoblacion().get(0).getEvaluacion();
+        double peor = poblacion.getPoblacion().get(poblacion.getPoblacion().size() - 1).getEvaluacion();
         System.out.println("Mejor por generación");
         System.out.println("Generación: " + generaciones);
         System.out.println("Mejor: " + mejor);
+        escritorArchivo.agregarContenido("Mejor por generación");
+        escritorArchivo.agregarContenido("Generación: " + generaciones);
+        escritorArchivo.agregarContenido("Mejor: " + mejor);
+        escritorArchivo.agregarContenido("Peor: " + peor);
+        escritorArchivo.agregarContenido("");
+        escritorEstadisticas.agregarContenido("Mejor por generación");
+        escritorEstadisticas.agregarContenido("Media: " + media(poblacion.getPoblacion()));
+        escritorEstadisticas.agregarContenido("Mediana: " + mediana(poblacion.getPoblacion()));
+        escritorEstadisticas.agregarContenido("DE: " + desviacionEstandar(poblacion.getPoblacion()));
+        escritorEstadisticas.agregarContenido("");
         do {
+            hijosEvaluados = 0;
             generaciones++;
             List<Individuo> padres = seleccionPadresRuleta();
             List<Individuo> hijos = cruzar(padres);
             List<Individuo> hijosMutados = mutarHijos(hijos);
-            int numeroHijos = poblacion.getPoblacion().size() - hijosMutados.size();
-            int contador = 0;
-            for (int x = numeroHijos; x < poblacion.getPoblacion().size(); x++) {
-                poblacion.getPoblacion().set(x, hijosMutados.get(contador));
-                contador++;
-            }
+            seleccionNatural(hijosMutados);
             evaluarPoblacion();
             poblacion.ordenarPoblacion();
             Collections.reverse(poblacion.getPoblacion());
             mejor = poblacion.getPoblacion().get(0).getEvaluacion();
-            for (int x = 0; x < poblacion.getPoblacion().size(); x++) {
-                System.out.println(poblacion.getPoblacion().get(x).getEvaluacion());
-            }
             System.out.println("Mejor por generación");
             System.out.println("Generación: " + generaciones);
             System.out.println("Mejor: " + mejor);
             evaluaciones += hijosMutados.size();
+            escritorArchivo.agregarContenido("Mejor por generación");
+            escritorArchivo.agregarContenido("Generación: " + generaciones);
+            escritorArchivo.agregarContenido("Mejor: " + mejor);
+            escritorArchivo.agregarContenido("Peor: " + peor);
+            escritorArchivo.agregarContenido("");
+            escritorEstadisticas.agregarContenido("Mejor por generación");
+            escritorEstadisticas.agregarContenido("Media: " + media(poblacion.getPoblacion()));
+            escritorEstadisticas.agregarContenido("Mediana: " + mediana(poblacion.getPoblacion()));
+            escritorEstadisticas.agregarContenido("DE: " + desviacionEstandar(poblacion.getPoblacion()));
+            escritorEstadisticas.agregarContenido("");
 
-        } while (mejor != 0 && evaluaciones < 2000);
-
+        } while (mejor != 0 && evaluaciones < 200);
+        
+        escritorArchivo.guardarArchivo();
+        escritorEstadisticas.guardarArchivo();
     }
 
 }

@@ -14,14 +14,18 @@ import java.io.PrintWriter;
  */
 public class FileWriter {
 
-    private static StringBuilder sb = new StringBuilder();
-
-    public static void agregarContenido(String cadena) {
+    private StringBuilder sb = new StringBuilder();
+    private String nombreArchivo;
+    
+    public FileWriter(String nombreArchivo){
+        this.nombreArchivo = nombreArchivo;
+    }
+    public void agregarContenido(String cadena) {
         sb.append(cadena);
         sb.append('\n');
     }
 
-    public static void guardarArchivo(String nombreArchivo) {
+    public void guardarArchivo() {
         try (PrintWriter writer = new PrintWriter(new File(nombreArchivo))) {
             writer.print(sb.toString());
             writer.close();
