@@ -13,14 +13,17 @@ import java.util.List;
  */
 public class AlgoritmoGenetico {
 
-    private static final int POBLACION = 20;
+    private static final int POBLACION = 10;
     private static final int N = 20;
     private static final int POSICION_CRUZA = 10;
     private static final double PROBAB_CRUZA = 0.8;
     private static Formula objeto_evaluador = new Formula();
     private static Restricciones objeto_restricciones = new Restricciones();
     private static Poblacion poblacion = new Poblacion();
-    private static Poblacion padres = new Poblacion();
+    //private static Poblacion padres = new Poblacion();
+    
+    private static List<Individuo> padresSelect;
+    private static List<Individuo> hijos;
 
     private static void generarPrimeraGeneracion() {
         for (int x = 0; x < POBLACION; x++) {
@@ -41,14 +44,17 @@ public class AlgoritmoGenetico {
 
     private static void evaluarPoblacion() {
         for (int x = 0; x < POBLACION; x++) {
-            Individuo individuo = poblacion.getPoblacion().get(x);
-            int resultadoEvaluacion = evaluacionIndividuo(individuo);
+            //Individuo individuo = poblacion.getPoblacion().get(x);
+            int resultadoEvaluacion = evaluacionIndividuo(poblacion.getPoblacion().get(x));
             if (resultadoEvaluacion == 0) {
-                individuo.setEvaluacion(2000000);
+                poblacion.getPoblacion().get(x).setEvaluacion(2000000);
+                poblacion.getPoblacion().get(x).setAprobado(false);
             } else if (resultadoEvaluacion == 1) {
-                individuo.setEvaluacion(1000000);
+                poblacion.getPoblacion().get(x).setEvaluacion(1000000);
+                poblacion.getPoblacion().get(x).setAprobado(false);
             } else if (resultadoEvaluacion == 2) {
-                asignarAptitud(individuo);
+                asignarAptitud(poblacion.getPoblacion().get(x));
+                System.out.println( x + " fue aprobado");
             } else {
                 System.out.println("Error en asignación de aptitud");
             }
@@ -101,13 +107,13 @@ public class AlgoritmoGenetico {
     }*/
 
     private static List<Individuo> seleccionPadresRuleta() {
-        List<Individuo> padresSelect = new ArrayList<>();
+        padresSelect = new ArrayList<>();
         double valorEsperado = 0.0;
         for (int x = 0; x < poblacion.getPoblacion().size(); x++) {
             double aptitud = poblacion.getPoblacion().get(x).getEvaluacion();
             valorEsperado += aptitud;
         }
-        for (int x = 0; x < 200; x++) {
+        for (int x = 0; x < POBLACION; x++) {
             double numeroGenerado = Math.random() * valorEsperado;
             double sumaNumeros = 0.0;
             for (int y = 0; y < poblacion.getPoblacion().size(); y++) {
@@ -121,7 +127,7 @@ public class AlgoritmoGenetico {
     }
 
     private static List<Individuo> cruzar(List<Individuo> padresSelect) {
-        List<Individuo> hijos = new ArrayList<>();
+        hijos = new ArrayList<>();
         for (int x = 0; x < padresSelect.size(); x = x + 2) {
             ArrayList<Double> valoresPadre1 = padresSelect.get(x).getValores();
             ArrayList<Double> valoresPadre2 = padresSelect.get(x + 1).getValores();
@@ -187,7 +193,9 @@ public class AlgoritmoGenetico {
             }
         }
         System.out.println("Numero de aprobados: " + contador);
-        List<Individuo> padres = seleccionPadresRuleta();
+        padresSelect = seleccionPadresRuleta();
+        System.out.println("Numero de padres: " + padresSelect.size());
+        
         
         for(int x=0; x<POBLACION; x++){
             System.out.println("Evaluación: " + poblacion.getPoblacion().get(x).getEvaluacion());
