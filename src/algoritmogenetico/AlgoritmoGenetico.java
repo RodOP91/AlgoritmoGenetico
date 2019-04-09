@@ -34,9 +34,6 @@ public class AlgoritmoGenetico {
                 valores.add(temp);
             }
             poblacion.getPoblacion().get(x).setValores(valores);
-            for (int z = 0; z < N; z++) {
-                System.out.println(poblacion.getPoblacion().get(x).getValores().get(z));
-            }
             //System.out.println("FIN");
         }
     }
@@ -45,7 +42,6 @@ public class AlgoritmoGenetico {
         for (int x = 0; x < NUM_INDIVIDUOS; x++) {
             Individuo individuo = poblacion.getPoblacion().get(x);
             int resultadoEvaluacion = evaluacionIndividuo(individuo);
-            System.out.println(resultadoEvaluacion);
             if (resultadoEvaluacion == 0) {
                 individuo.setEvaluacion(2000000);
             } else if (resultadoEvaluacion == 1) {
@@ -120,16 +116,18 @@ public class AlgoritmoGenetico {
         }
         return hijos;
     }
-    
-    public List<Individuo> mutarHijos(List<Individuo> hijos){
+
+    private static List<Individuo> mutarHijos(List<Individuo> hijos) {
+        List<Individuo> hijosMutados = new ArrayList<>();
         Random rand = new Random();
-        int num_aleatorio= rand.nextInt(20);
-        for(int x =0; x < hijos.size() ; x++){
-            ArrayList<Double> valores_mutados = new ArrayList();
-            valores_mutados.set(num_aleatorio, (rand.nextDouble()*(11-0)+0));
+        int num_aleatorio = rand.nextInt(20);
+        for (int x = 0; x < hijos.size(); x++) {
+            ArrayList<Double> valores_mutados = hijos.get(x).getValores();
+            valores_mutados.set(num_aleatorio, (rand.nextDouble() * (11 - 0) + 0));
             hijos.get(x).setValores(valores_mutados);
+            hijosMutados.add(hijos.get(x));
         }
-        return hijos;
+        return hijosMutados;
     }
 
     private static double media(List<Individuo> poblacionAux) {
@@ -165,19 +163,41 @@ public class AlgoritmoGenetico {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String nombreArchivo = "Prueba.csv";
+        int generaciones = 1;
+        int evaluaciones = 50;
         generarPrimeraGeneracion();
         evaluarPoblacion();
         poblacion.ordenarPoblacion();
         Collections.reverse(poblacion.getPoblacion());
-        for (int x = 0; x < poblacion.getPoblacion().size(); x++) {
-            System.out.println(x + " " + poblacion.getPoblacion().get(x).getEvaluacion());
-        }
-        List<Individuo> padres = seleccionPadresRuleta();
-        for (int x = 0; x < padres.size(); x++) {
-            System.out.println(x + "" + padres.get(x).getEvaluacion());
-        }
-        FileWriter.guardarArchivo(nombreArchivo);
+        double mejor = poblacion.getPoblacion().get(0).getEvaluacion();
+        System.out.println("Mejor por generación");
+        System.out.println("Generación: " + generaciones);
+        System.out.println("Mejor: " + mejor);
+        do {
+            generaciones++;
+            List<Individuo> padres = seleccionPadresRuleta();
+            List<Individuo> hijos = cruzar(padres);
+            List<Individuo> hijosMutados = mutarHijos(hijos);
+            int numeroHijos = poblacion.getPoblacion().size() - hijosMutados.size();
+            int contador = 0;
+            for (int x = numeroHijos; x < poblacion.getPoblacion().size(); x++) {
+                poblacion.getPoblacion().set(x, hijosMutados.get(contador));
+                contador++;
+            }
+            evaluarPoblacion();
+            poblacion.ordenarPoblacion();
+            Collections.reverse(poblacion.getPoblacion());
+            mejor = poblacion.getPoblacion().get(0).getEvaluacion();
+            for (int x = 0; x < poblacion.getPoblacion().size(); x++) {
+                System.out.println(poblacion.getPoblacion().get(x).getEvaluacion());
+            }
+            System.out.println("Mejor por generación");
+            System.out.println("Generación: " + generaciones);
+            System.out.println("Mejor: " + mejor);
+            evaluaciones += hijosMutados.size();
+
+        } while (mejor != 0 && evaluaciones < 2000);
+
     }
 
 }

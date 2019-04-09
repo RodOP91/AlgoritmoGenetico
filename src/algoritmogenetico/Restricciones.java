@@ -26,7 +26,6 @@ public class Restricciones {
             res *= individuo.getValores().get(x);
         }
         double restriccion = 0.75 - (res);
-        System.out.println("Primera rest: " + restriccion);
         if(restriccion <=0){
             return true;
         }else{
@@ -50,7 +49,6 @@ public class Restricciones {
         }
         
         double restriccion = (res)-(7.5 * 20);
-        System.out.println("Segunda rest: " + restriccion);
         if(restriccion<= 0){
             return true;
         }else{
